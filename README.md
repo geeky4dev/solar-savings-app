@@ -16,6 +16,9 @@ It uses following technologies:
 ✅ Elegant design thanks to Bootstrap.  
 ✅ Red alerts for errors and green alerts for successful results.  
 
+
+![Solar Savings Calculator](https://github.com/user-attachments/assets/58d5b443-6fa2-441c-8edb-dfea29737d04)
+
 __________________________________________________________________________________________________
 
 📂 Project Structure    
