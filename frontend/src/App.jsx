@@ -1,33 +1,95 @@
+// frontend/src/App.jsx
 import { useState } from 'react'
 
 function App() {
+  const [consumo, setConsumo] = useState("")
+  const [tarifa, setTarifa] = useState("")
+  const [produccion, setProduccion] = useState("")
   const [mensaje, setMensaje] = useState("")
-  const [respuesta, setRespuesta] = useState("")
+  const [error, setError] = useState("")
 
-  const enviarMensaje = async () => {
-    const res = await fetch("/chat", {
+  const validarCampos = () => {
+    if (!consumo || consumo <= 0) return "Electricity consumption must be greater than 0."
+    if (!tarifa || tarifa <= 0) return "Electricity price must be greater than 0."
+    if (!produccion || produccion <= 0) return "Solar energy production must be greater than 0."
+    return ""
+  }
+
+  const calcularAhorro = async () => {
+    const errorValidacion = validarCampos()
+    if (errorValidacion) {
+      setError(errorValidacion)
+      setMensaje("")
+      return
+    }
+
+    const res = await fetch("/calcular", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ mensaje })
+      body: JSON.stringify({ consumo, tarifa, produccion })
     })
+
     const data = await res.json()
-    setRespuesta(data.respuesta)
+    setMensaje(data.mensaje)
+    setError("")
   }
 
   return (
-    <div style={{ padding: "2rem" }}>
-      <h1>Chatbot FAQ</h1>
-      <input
-        type="text"
-        value={mensaje}
-        onChange={(e) => setMensaje(e.target.value)}
-        placeholder="Escribe tu pregunta"
-      />
-      <button onClick={enviarMensaje}>Enviar</button>
-      <p><strong>Respuesta:</strong> {respuesta}</p>
+    <div className="container mt-5">
+      <h1 className="mb-4">Solar Savings Calculator</h1>
+
+      <div className="mb-3">
+        <label className="form-label">Monthly consumption (kWh)</label>
+        <input
+          type="number"
+          className="form-control"
+          value={consumo}
+          onChange={(e) => setConsumo(e.target.value)}
+          min="0"
+          placeholder="e.g: 300"
+        />
+      </div>
+
+      <div className="mb-3">
+        <label className="form-label">Electricity price (€/kWh)</label>
+        <input
+          type="number"
+          className="form-control"
+          value={tarifa}
+          onChange={(e) => setTarifa(e.target.value)}
+          min="0"
+          step="0.01"
+          placeholder="e.g: 0.15"
+        />
+      </div>
+
+      <div className="mb-3">
+        <label className="form-label">Estimated solar production (kWh)</label>
+        <input
+          type="number"
+          className="form-control"
+          value={produccion}
+          onChange={(e) => setProduccion(e.target.value)}
+          min="0"
+          placeholder="e.g: 250"
+        />
+      </div>
+
+      <button className="btn btn-primary" onClick={calcularAhorro}>
+        Calculate savings
+      </button>
+
+      {error && (
+        <div className="alert alert-danger mt-3">{error}</div>
+      )}
+
+      {mensaje && (
+        <div className="alert alert-success mt-3">{mensaje}</div>
+      )}
     </div>
   )
 }
 
 export default App
+
 

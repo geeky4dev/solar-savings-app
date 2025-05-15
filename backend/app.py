@@ -1,28 +1,25 @@
+# backend/app.py
+
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)  # Permite conexión desde el frontend
+CORS(app)
 
-RESPUESTAS_FAQ_ORIGINAL = {
-    "hola": "¡Hola! ¿En qué puedo ayudarte?",
-    "qué es tu empresa": "Somos una empresa de ejemplo que usa IA.",
-    "adiós": "¡Hasta luego!",
-    "cómo estás": "Estoy bien, gracias por preguntar.",
-    "cuál es tu propósito": "Mi propósito es ayudarte respondiendo preguntas frecuentes.",
-    "qué tecnologías usas": "Uso tecnologías como Flask para el backend y React para el frontend.",
-    "qué es Flask": "Flask es un framework web de Python utilizado para construir aplicaciones web."
-}
-# Crear una versión con claves en minúscula
-RESPUESTAS_FAQ = {k.lower(): v for k, v in RESPUESTAS_FAQ_ORIGINAL.items()}
-
-@app.route("/chat", methods=["POST"])
-def chat():
+@app.route("/calcular", methods=["POST"])
+def calcular_ahorro():
     data = request.get_json()
-    mensaje = data.get("mensaje", "").strip().lower()  # Normaliza la entrada
-    print(f"Mensaje recibido (normalizado): '{mensaje}'")  # Depuración
-    respuesta = RESPUESTAS_FAQ.get(mensaje, "Lo siento, no entendí tu pregunta.")
-    return jsonify({"respuesta": respuesta})
+    
+    consumo_mensual = float(data.get("consumo", 0))  # en kWh
+    tarifa = float(data.get("tarifa", 0))            # en €/kWh
+    produccion_solar = float(data.get("produccion", 0))  # en kWh
+
+    ahorro = min(produccion_solar, consumo_mensual) * tarifa
+
+    return jsonify({
+        "ahorro_mensual": round(ahorro, 2),
+        "mensaje": f"Estimated monthly savings: €{round(ahorro, 2)}"
+    })
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5001)
