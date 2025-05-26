@@ -1,4 +1,3 @@
-// frontend/src/App.jsx
 import { useState } from 'react'
 
 function App() {
@@ -8,7 +7,7 @@ function App() {
   const [mensaje, setMensaje] = useState("")
   const [error, setError] = useState("")
 
-  // Aquí defines la URL base del backend
+  // Usa variable de entorno para la URL base del backend
   const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5001"
 
   const validarCampos = () => {
@@ -26,15 +25,24 @@ function App() {
       return
     }
 
-    const res = await fetch("https://solar-savings-app-backend.onrender.com/calcular", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ consumo, tarifa, produccion })
-    })
+    try {
+      const res = await fetch("/calcular", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ consumo, tarifa, produccion })
+})
 
-    const data = await res.json()
-    setMensaje(data.mensaje)
-    setError("")
+      if (!res.ok) {
+        throw new Error(`Error from server: ${res.status} ${res.statusText}`)
+      }
+
+      const data = await res.json()
+      setMensaje(data.mensaje || "Calculation successful")
+      setError("")
+    } catch (err) {
+      setError(`Failed to connect to backend: ${err.message}`)
+      setMensaje("")
+    }
   }
 
   return (
