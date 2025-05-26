@@ -7,7 +7,7 @@ function App() {
   const [mensaje, setMensaje] = useState("")
   const [error, setError] = useState("")
 
-  // Usa variable de entorno para la URL base del backend
+  // Usar la variable de entorno correctamente
   const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5001"
 
   const validarCampos = () => {
@@ -26,11 +26,11 @@ function App() {
     }
 
     try {
-      const res = await fetch("/calcular", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ consumo, tarifa, produccion })
-})
+      const res = await fetch(`${backendUrl}/calcular`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ consumo, tarifa, produccion })
+      })
 
       if (!res.ok) {
         throw new Error(`Error from server: ${res.status} ${res.statusText}`)
@@ -90,13 +90,8 @@ function App() {
         Calculate savings
       </button>
 
-      {error && (
-        <div className="alert alert-danger mt-3">{error}</div>
-      )}
-
-      {mensaje && (
-        <div className="alert alert-success mt-3">{mensaje}</div>
-      )}
+      {error && <div className="alert alert-danger mt-3">{error}</div>}
+      {mensaje && <div className="alert alert-success mt-3">{mensaje}</div>}
     </div>
   )
 }
