@@ -6,6 +6,10 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
+@app.route("/")
+def home():
+    return "API solar backend running"
+
 @app.route("/calcular", methods=["POST"])
 def calcular_ahorro():
     data = request.get_json()
