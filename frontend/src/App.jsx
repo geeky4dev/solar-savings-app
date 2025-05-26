@@ -8,6 +8,9 @@ function App() {
   const [mensaje, setMensaje] = useState("")
   const [error, setError] = useState("")
 
+  // Aquí defines la URL base del backend
+  const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5001"
+
   const validarCampos = () => {
     if (!consumo || consumo <= 0) return "Electricity consumption must be greater than 0."
     if (!tarifa || tarifa <= 0) return "Electricity price must be greater than 0."
@@ -23,7 +26,7 @@ function App() {
       return
     }
 
-    const res = await fetch("/calcular", {
+    const res = await fetch("https://solar-savings-app-backend.onrender.com/calcular", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ consumo, tarifa, produccion })
